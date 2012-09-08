@@ -1,61 +1,57 @@
 from copy import deepcopy
+import math
+
 AXES = [0,1,2]
 CUBE_MAP = [2,1,1,2,1,2,1,1,2,2,1,1,1,2,2,2,2]
 
-def walk(direction, path, map):
-    print map
-    print_path(path)
-    direction = deepcopy(direction)
+def walk(steps, axis, sign, path, map_index):
+    # Copy args
+    steps = deepcopy(steps)
+    axis = deepcopy(axis)
+    sign = deepcopy(sign)
     path = deepcopy(path)
-    map = deepcopy(map)
-    try:
-        num_steps = map[0]
-    except IndexError:
-        print "#@#$@#$@#$@#$@#"
-        return path #complete
- 
-    if num_steps == 0:
-        if len(map) == 1 and map[0] == 0:
-            return path
-        # change direction then walk
-        print 'change direction'
-        map = map[1:]
-        # try different directions
-        for new_direction in set(AXES) - set([direction]):
-            for orientation in (1, -1):
-                new_node = deepcopy(path[-1])
-                new_node[new_direction] += orientation
-                if not verify(new_node, path):
-                    print 'failed'
-                    continue
-                else:
-                    new_map = deepcopy(map)
-                    new_map[0] = new_map[0] - 1
-                    new_path = deepcopy(path)
-                    new_path.append(new_node)
-                    path = walk(new_direction, new_path, new_map)
-                    if path:
-                        return path
-    else:
-        for orientation in (1, -1):
-            new_node = deepcopy(path[-1])
-            new_node[direction] += orientation
-            if not verify(new_node, path):
-                print 'failed'
-                continue
-            else:
-                new_map = deepcopy(map)
-                new_map[0] = new_map[0] - 1
-                new_path = deepcopy(path)
-                new_path.append(new_node)
-                path = walk(direction, new_path, new_map)
-                if path:
-                    return path
+    map_index = deepcopy(map_index)
+    
+   
+
+    new_nodes = []
+    current_node = path[-1]
+    # Take the number of steps in the right direction
+    for i in range(0, steps):
+        new_node = deepcopy(current_node) 
+        new_node[axis] += sign * (i + 1)
+        if verify(new_node, path):
+            # Node verified, remember it
+            new_nodes.append(new_node)
+        else:
+            # Stop searching this branch
+            return False
+
+    new_path = deepcopy(path) # NOTE: copy might not be needed here
+    new_path.extend(new_nodes)
+    new_index = map_index + 1
+
+    # debug
+    print_path(new_path)
+    print new_index
+
+    # Success condition
+    if len(new_path) == math.pow(len(AXES),3):
+        print ' %%% SOLUTION FOUND %%% '
+        return new_path
+    
+    # Otherwise keep walking
+    for d in set(AXES) - set([axis]):
+        for sign in (1,-1):
+            walk_result = walk(steps=CUBE_MAP[new_index], axis=d, sign=sign, path=new_path, map_index=new_index)
+            if walk_result:
+                # Ignore falsy return values
+                return walk_result
 
 def verify(node, path):
     # verify that node exists
-    for axis in node:
-        if axis > 2 or axis < 0:
+    for value in node:
+        if value > 2 or value < 0:
             return False
 
     # verify that node is not in path
@@ -81,11 +77,8 @@ def print_path(path):
     print '=============='
     
 if __name__ == '__main__':
-    direction = 0
+    axis = 0
     path = [[0,0,0]]
-
-    path = walk(direction, path, CUBE_MAP)
+    index = 0
+    path = walk(steps=CUBE_MAP[index], axis=axis, sign=1, path=path, map_index=index)
     print path
-    print len(path)
-    
-    
