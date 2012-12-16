@@ -45,8 +45,10 @@ def open_data_set(name):
 def main():
     training_data = open_data_set('train.csv')
 
-    active_gen_names = ['SexCalculator'] # String names of active probability generators
-    active_gens = [] # class instances of generators
+    # String names of active probability generators
+    active_gen_names = ['SexCalculator', 'PClassCalculator', 'EmbarkedCalculator']
+    # class instances of generators
+    active_gens = []
 
     for gen in active_gen_names:
         ''' Instantiate generators and run against training data set '''

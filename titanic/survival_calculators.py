@@ -23,10 +23,13 @@ class SurvivalCalculator(object):
                 self.survive_table[key] = {'dead': 0, 'alive':0}
             self.survive_table[key][survived and 'alive' or 'dead'] += 1
 
+    def __unicode__(self):
+        return self.__class__.__name__
+
     
 class PClassCalculator(SurvivalCalculator):
     def __init__(self, data):
-        super(SexCalculator, self).__init__(data, 1)
+        super(PClassCalculator, self).__init__(data, 1)
 
 
 class SexCalculator(SurvivalCalculator):
