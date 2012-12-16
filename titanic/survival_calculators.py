@@ -10,6 +10,7 @@ class SurvivalCalculator(object):
             dead = key_data['dead']
             return float(alive)/(alive+dead)
 
+
     def __init__(self, data, index):
         self.index = index
         self.survive_table = {}
@@ -24,7 +25,8 @@ class SurvivalCalculator(object):
 
     
 class PClassCalculator(SurvivalCalculator):
-    pass
+    def __init__(self, data):
+        super(SexCalculator, self).__init__(data, 1)
 
 
 class SexCalculator(SurvivalCalculator):
