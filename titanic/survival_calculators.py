@@ -3,7 +3,7 @@ class SurvivalCalculator(object):
     Calculate survival probability based on dead/alive counts
     '''
     def calc_survival(self, row):
-        key = row[self.index]      
+        key = row[self.index-1]      
         if self.survive_table.has_key(key):
             key_data = self.survive_table[key]
             alive = key_data['alive']
@@ -31,7 +31,6 @@ class PClassCalculator(SurvivalCalculator):
     def __init__(self, data):
         super(PClassCalculator, self).__init__(data, 1)
 
-
 class SexCalculator(SurvivalCalculator):
     def __init__(self, data):
         super(SexCalculator, self).__init__(data, 3)
@@ -40,7 +39,6 @@ class EmbarkedCalculator(SurvivalCalculator):
     def __init__(self, data):
         super(EmbarkedCalculator, self).__init__(data, 10)
 
-
-
 class AgeCalculator(SurvivalCalculator):
-    pass
+    def __init__(self, data):
+        super(AgeCalculator, self).__init__(data, 4)
