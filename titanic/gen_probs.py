@@ -43,12 +43,13 @@ def calc_test_data(active_gens):
         survival_bool = calc_passenger_survival(active_gens, passenger_row)
         results.append(survival_bool)
 
-    row_counter = 0
     project_root = os.path.abspath(os.path.dirname(__file__))
     #Open up the csv file in to a Python object
     csv_file_object = csv.reader(
         open(os.path.join(project_root, 'data/' + 'test.csv'), 'rb')
     ) 
+    row_counter = 1
+    csv_file_object.next()
     for row in csv_file_object:
         row.insert(0, int(results[row_counter]))
         write_file.writerow(row)
