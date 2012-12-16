@@ -33,6 +33,11 @@ class SexCalculator(SurvivalCalculator):
     def __init__(self, data):
         super(SexCalculator, self).__init__(data, 3)
 
+class EmbarkedCalculator(SurvivalCalculator):
+    def __init__(self, data):
+        super(EmbarkedCalculator, self).__init__(data, 10)
+
+
 
 class AgeCalculator(SurvivalCalculator):
     pass
