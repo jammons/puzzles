@@ -18,9 +18,9 @@ class SurvivalCalculator:
         for entry in data:
             survived = int(entry[0])
             key = entry[self.index]
-            if !key:
+            if not key:
                 continue
-            if !survive_table.has_key(key):
+            if not survive_table.has_key(key):
                 survive_table[key] = {'dead': 0, 'alive':0}
             survive_table[key][survived and 'alive' or 'dead'] += 1
 
