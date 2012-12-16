@@ -1,6 +1,6 @@
 import os
 import csv as csv 
-import probability_generators as prob_gens
+import survival_calculators as prob_gens
 import numpy as np
 
 
@@ -14,14 +14,15 @@ def test_against_training_sample(active_gens):
         # See if we predict the correct value
         predicted_survival = []
         for gen in active_gens:
-            predicted_survival.append(gen.calc_survival(passenger_row))
+            predicted_val = gen.calc_survival(passenger_row)
+            predicted_survival.append(predicted_val)
         averaged_survival = np.average(predicted_survival)
         survival_bool = bool(round(averaged_survival))
 
-        if bool(passenger_row[0]) == survival_bool:
+        if bool(int(passenger_row[0])) == survival_bool:
             correct += 1
 
-    print "We predicted %s/%s correct. This is %s%" % (
+    print "We predicted %s/%s correct. This is %s%%" % (
         correct, len(data), float(correct)/len(data)
     )
 
@@ -44,7 +45,7 @@ def open_data_set(name):
 def main():
     training_data = open_data_set('train.csv')
 
-    active_gen_names = [] # String names of active probability generators
+    active_gen_names = ['SexCalculator'] # String names of active probability generators
     active_gens = [] # class instances of generators
 
     for gen in active_gen_names:

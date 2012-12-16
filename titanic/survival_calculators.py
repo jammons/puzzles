@@ -1,16 +1,14 @@
-import numpy as np
-
-class SurvivalCalculator:
+class SurvivalCalculator(object):
     '''
     Calculate survival probability based on dead/alive counts
     '''
     def calc_survival(self, row):
-        key = row[index]      
+        key = row[self.index]      
         if self.survive_table.has_key(key):
             key_data = self.survive_table[key]
             alive = key_data['alive']
             dead = key_data['dead']
-            return alive/(alive+dead)
+            return float(alive)/(alive+dead)
 
     def __init__(self, data, index):
         self.index = index
@@ -20,14 +18,19 @@ class SurvivalCalculator:
             key = entry[self.index]
             if not key:
                 continue
-            if not survive_table.has_key(key):
-                survive_table[key] = {'dead': 0, 'alive':0}
-            survive_table[key][survived and 'alive' or 'dead'] += 1
+            if not self.survive_table.has_key(key):
+                self.survive_table[key] = {'dead': 0, 'alive':0}
+            self.survive_table[key][survived and 'alive' or 'dead'] += 1
 
     
 class PClassCalculator(SurvivalCalculator):
     pass
+
+
 class SexCalculator(SurvivalCalculator):
-    pass
+    def __init__(self, data):
+        super(SexCalculator, self).__init__(data, 3)
+
+
 class AgeCalculator(SurvivalCalculator):
     pass
