@@ -4,20 +4,27 @@ import survival_calculators as prob_gens
 import numpy as np
 
 
+def calc_passenger_survival(active_gens, data_row):
+    ''' Takes a row and returns a survival boolean value '''
+    predicted_survival = []
+    for gen in active_gens:
+        predicted_val = gen.calc_survival(data_row)
+        if predicted_val is None:
+            continue
+        predicted_survival.append(predicted_val)
+    averaged_survival = np.average(predicted_survival)
+    survival_bool = bool(round(averaged_survival))
+    return survival_bool
+
 def test_against_training_sample(active_gens):
     ''' Runs all the active_gens against each passenger and determines what %
     we predicted correctly. '''
-    data = open_data_set('train.csv') # yes, this is redundant, but I like
+    (file, data) = open_data_set('train.csv') # yes, this is redundant, but I like
                                       # refreshing this value here.
     correct = 0
     for passenger_row in data:
         # See if we predict the correct value
-        predicted_survival = []
-        for gen in active_gens:
-            predicted_val = gen.calc_survival(passenger_row)
-            predicted_survival.append(predicted_val)
-        averaged_survival = np.average(predicted_survival)
-        survival_bool = bool(round(averaged_survival))
+        survival_bool = calc_passenger_survival(active_gens, passenger_row)
 
         if bool(int(passenger_row[0])) == survival_bool:
             correct += 1
@@ -26,6 +33,26 @@ def test_against_training_sample(active_gens):
         correct, len(data), float(correct)/len(data)
     )
 
+
+def calc_test_data(active_gens):
+    (readfile, data) = open_data_set('test.csv')
+    write_file = csv.writer(open('./survivors.csv', 'wb'))
+
+    results = []
+    for passenger_row in data:
+        survival_bool = calc_passenger_survival(active_gens, passenger_row)
+        results.append(survival_bool)
+
+    row_counter = 0
+    project_root = os.path.abspath(os.path.dirname(__file__))
+    #Open up the csv file in to a Python object
+    csv_file_object = csv.reader(
+        open(os.path.join(project_root, 'data/' + 'test.csv'), 'rb')
+    ) 
+    for row in csv_file_object:
+        row.insert(0, int(results[row_counter]))
+        write_file.writerow(row)
+        row_counter += 1
 
 def open_data_set(name):
     ''' Opens a csv file and returns a numpy array with values from set. '''
@@ -39,11 +66,11 @@ def open_data_set(name):
     for row in csv_file_object:
         data.append(row)
     data = np.array(data)
-    return data
+    return (csv_file_object, data)
 
 
 def main():
-    training_data = open_data_set('train.csv')
+    (file, training_data) = open_data_set('train.csv')
 
     # String names of active probability generators
     active_gen_names = ['SexCalculator', 'PClassCalculator', 'EmbarkedCalculator']
@@ -56,9 +83,11 @@ def main():
         active_gens.append(prob_gen_instance)
 
     # Test our results against actual training set values
-    test_against_training_sample(active_gens)
+    #test_against_training_sample(active_gens)
 
-    # Later: Calculate against test.csv data
+    # Calculate against test.csv data
+    calc_test_data(active_gens)
+
 
 if __name__ == '__main__':
     main()
