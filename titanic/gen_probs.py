@@ -48,7 +48,7 @@ def calc_test_data(active_gens):
     csv_file_object = csv.reader(
         open(os.path.join(project_root, 'data/' + 'test.csv'), 'rb')
     ) 
-    row_counter = 1
+    row_counter = 0
     csv_file_object.next()
     for row in csv_file_object:
         row.insert(0, int(results[row_counter]))
