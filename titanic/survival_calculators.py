@@ -21,7 +21,7 @@ class SurvivalCalculator(object):
     A useful starting point for any SurvivalCalculator
     '''
     def __init__(self, data, index):
-        self.weight = 0.0
+        self.weight = 1.0
         self.index = index
         self.survive_table = {}
         for entry in data:
@@ -35,7 +35,10 @@ class SurvivalCalculator(object):
 
     def gen_weighted_prob(self, row):
         ''' Returns a weighed value for probability of survival '''
-        return self.weight * self.calc_survival(row)
+        calc_val = self.calc_survival(row)
+        if calc_val is None:
+            return None
+        return self.weight * calc_val
 
     def __str__(self):
         return self.__class__.__name__

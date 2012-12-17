@@ -46,24 +46,43 @@ def weight_calcs(active_calcs):
             else:
                 calc.weight -= adjustment
 
-def calc_passenger_survival(active_calcs, data_row):
+def calc_passenger_survival(active_calcs, data_row, WEIGHT_CALCS):
     ''' Takes a row and returns a survival boolean value '''
     predicted_survival = [] # List of values from each calculator
-    for gen in active_calcs:
-        # Calculate probabilities for each calculator
-        predicted_val = gen.calc_survival(data_row)
-        if predicted_val is None:
-            continue
-        predicted_survival.append(predicted_val)
 
-    # Average the values from all calculators
-    averaged_survival = np.average(predicted_survival)
+    if WEIGHT_CALCS:
+        predicted_survival = [] # List of values from each calculator
+        weights = [calc.weight for calc in active_calcs]
 
-    # Convert the survival float into a 0 or 1 value
-    survival_bool = bool(round(averaged_survival))
-    return survival_bool
+        for gen in active_calcs:
+            # Calculate weighted probability value for each calculator
+            weighted_val = gen.gen_weighted_prob(data_row)
+            if weighted_val is None:
+                continue
+            predicted_survival.append(weighted_val)
 
-def test_against_training_sample(active_calcs):
+        # Calculate weighted average
+        weighted_avg = sum(predicted_survival)/sum(weights)
+
+        # Convert the survival float into a 0 or 1 value
+        survival_bool = bool(round(weighted_avg))
+        return survival_bool
+    else: # Don't use weighted values
+        for gen in active_calcs:
+            # Calculate probabilities for each calculator
+            predicted_val = gen.calc_survival(data_row)
+            if predicted_val is None:
+                continue
+            predicted_survival.append(predicted_val)
+
+        # Average the values from all calculators
+        averaged_survival = np.average(predicted_survival)
+
+        # Convert the survival float into a 0 or 1 value
+        survival_bool = bool(round(averaged_survival))
+        return survival_bool
+
+def test_against_training_sample(active_calcs, WEIGHT_CALCS):
     ''' Runs all the active_calcs against each passenger and determines what %
     we predicted correctly. '''
     data = open_data_set('train.csv') # yes, this is redundant, but I like
@@ -71,7 +90,9 @@ def test_against_training_sample(active_calcs):
     correct = 0
     for passenger_row in data:
         # See if we predict the correct value
-        survival_bool = calc_passenger_survival(active_calcs, passenger_row)
+        survival_bool = calc_passenger_survival(
+            active_calcs, passenger_row, WEIGHT_CALCS
+        )
 
         if bool(int(passenger_row[0])) == survival_bool:
             correct += 1
@@ -105,6 +126,7 @@ def calc_test_data(active_calcs):
 
 
 def main():
+    WEIGHT_CALCS = False
     training_data = open_data_set('train.csv')
 
     # String names of active probability generators
@@ -112,19 +134,27 @@ def main():
     # class instances of generators
     active_calcs = []
 
-    # Calculate probabilities for calculators
+    # Instantiate and calculate probabilities for calculators
     for gen in active_gen_names:
         ''' Instantiate generators and run against training data set '''
         prob_gen_instance = getattr(prob_gens, gen)(training_data)
         active_calcs.append(prob_gen_instance)
 
-    weight_calcs(active_calcs)
-    
-    weights = [calc.weight for calc in active_calcs]
-    print weights
+    print "Running tests with:"
+    print "=== Calculators ==="
+    for calc in active_calcs:
+        print calc
+    if WEIGHT_CALCS:
+        print "=== Weighting Enabled ==="
+    else:
+        print "=== Weighting Disabled ==="
 
+    if WEIGHT_CALCS:
+        # Weight the calculators
+        weight_calcs(active_calcs)
+    
     # Test our results against actual training set values
-    test_against_training_sample(active_calcs)
+    test_against_training_sample(active_calcs, WEIGHT_CALCS)
 
     # Calculate against test.csv data
     #calc_test_data(active_calcs)
