@@ -8,19 +8,20 @@ class SurvivalCalculator(object):
     Calculate survival probability based on dead/alive counts
     '''
     def calc_survival(self, row):
-        key = row[self.index-1]                 # Decrement index for test set
+        #key = row[self.index-1]                 # Decrement index for test set
+        key = row[self.index]      
         if self.survive_table.has_key(key):
             key_data = self.survive_table[key]
             alive = key_data['alive']
             dead = key_data['dead']
             return float(alive)/(alive+dead)
 
-
     '''
     Default __init__ method builds a hash based on keys and survival counts
     A useful starting point for any SurvivalCalculator
     '''
     def __init__(self, data, index):
+        self.weight = 0.0
         self.index = index
         self.survive_table = {}
         for entry in data:
@@ -32,7 +33,11 @@ class SurvivalCalculator(object):
                 self.survive_table[key] = {'dead': 0, 'alive':0}
             self.survive_table[key][survived and 'alive' or 'dead'] += 1
 
-    def __unicode__(self):
+    def gen_weighted_prob(self, row):
+        ''' Returns a weighed value for probability of survival '''
+        return self.weight * self.calc_survival(row)
+
+    def __str__(self):
         return self.__class__.__name__
 
     
