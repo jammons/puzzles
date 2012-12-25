@@ -138,7 +138,7 @@ class SurvivalCalculator(object):
 
         # Instantiate and calculate probabilities for calculators
         for gen in active_gen_names:
-            ''' Instantiate generators and run against training data set '''
+            #Instantiate generators and run against training data set
             prob_gen_instance = getattr(prob_gens, gen)(training_data)
             active_calcs.append(prob_gen_instance)
 
