@@ -43,23 +43,38 @@ class SurvivalCalculator(object):
     def __str__(self):
         return self.__class__.__name__
 
-    
+'''
+Passenger class is a proxy for socio-economic status
+There are only three possible values, so not much needs to be done here.
+'''
 class PClassCalculator(SurvivalCalculator):
     def __init__(self, data):
         super(PClassCalculator, self).__init__(data, 1)
 
-
+'''
+Passenger name might be an interesting area to research...later
+'''
 class NameCalculator(SurvivalCalculator):
     def __init__(self, data):
         super(NameCalculator, self).__init__(data, 2)
 
-
+'''
+Straightforward probability calculator based on sex
+'''
 class SexCalculator(SurvivalCalculator):
     def __init__(self, data):
         super(SexCalculator, self).__init__(data, 3)
 
-
+'''
+Probability based on age. Not all ages will be covered, so 
+a function is in order.
+'''
 class AgeCalculator(SurvivalCalculator):
+    
+    def createBrackets(self):
+        # We want the computer to determine the bracket boundaries for us
+
+        
     def __init__(self, data):
         super(AgeCalculator, self).__init__(data, 4)
 
